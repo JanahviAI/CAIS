@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "CAIS",
+    "slug": "cais-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "cais",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#1a2a5e"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "edu.siesgst.cais"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#1a2a5e"
+      },
+      "package": "edu.siesgst.cais"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
