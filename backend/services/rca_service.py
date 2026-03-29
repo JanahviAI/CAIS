@@ -3,25 +3,11 @@ services/rca_service.py
 ────────────────────────
 Root Cause Analysis engine using pattern matching + NLP heuristics.
 Completely free and offline — no external API dependencies.
-
-Optionally uses spaCy for named entity recognition if installed:
-  pip install spacy && python -m spacy download en_core_web_sm
-
-Falls back gracefully to pure-Python patterns if spaCy is unavailable.
 """
 
 from __future__ import annotations
 import re
 from typing import Optional
-
-# ── Optional spaCy NLP ────────────────────────────────────────────────────────
-try:
-    import spacy
-    _nlp = spacy.load("en_core_web_sm")
-    _SPACY_AVAILABLE = True
-except Exception:
-    _nlp = None
-    _SPACY_AVAILABLE = False
 
 
 # ── Root cause patterns (issue type → root cause template) ───────────────────
@@ -116,20 +102,6 @@ def _extract_severity_factors(text: str) -> list[str]:
     return factors
 
 
-def _extract_spacy_entities(text: str) -> dict[str, list[str]]:
-    """Use spaCy NER to extract locations and organizations from text."""
-    if not _SPACY_AVAILABLE or _nlp is None:
-        return {}
-    doc = _nlp(text)
-    entities: dict[str, list[str]] = {}
-    for ent in doc.ents:
-        label = ent.label_
-        if label not in entities:
-            entities[label] = []
-        entities[label].append(ent.text)
-    return entities
-
-
 def analyze_complaint(text: str, category: Optional[str] = None,
                       location: Optional[str] = None) -> dict:
     """
@@ -140,7 +112,6 @@ def analyze_complaint(text: str, category: Optional[str] = None,
       - severity_factors  : str  — comma-separated list of aggravating factors
       - recommended_dept  : str  — department that should handle this
       - confidence        : str  — Low / Medium / High
-      - spacy_entities    : dict — NER entities (if spaCy available)
     """
     lower = text.lower()
 
@@ -174,14 +145,8 @@ def analyze_complaint(text: str, category: Optional[str] = None,
     # Severity factors
     factors = _extract_severity_factors(text)
 
-    # Try spaCy entities for richer context
-    spacy_entities = _extract_spacy_entities(text)
-    locations_found = spacy_entities.get("GPE", []) + spacy_entities.get("LOC", [])
     if location and location not in ("Unknown", ""):
         root_cause = f"{root_cause} — reported at {location}"
-
-    if locations_found:
-        root_cause = f"{root_cause} (location context: {', '.join(locations_found[:2])})"
 
     # Confidence: higher when keyword matches + factors found
     if matched_count and len(factors) >= 2:
@@ -196,5 +161,4 @@ def analyze_complaint(text: str, category: Optional[str] = None,
         "severity_factors": "; ".join(factors) if factors else "No critical severity factors identified",
         "recommended_dept": recommended_dept,
         "confidence":       confidence,
-        "spacy_available":  _SPACY_AVAILABLE,
     }
