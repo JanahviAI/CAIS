@@ -43,6 +43,8 @@ class ComplaintORM(Base):
     root_cause       = Column(Text,        nullable=True)
     severity_factors = Column(Text,        nullable=True)
     recommended_dept = Column(String(128), nullable=True)
+    # ── Anomaly Detection fields ──────────────────────────────────────────────
+    is_anomaly       = Column(Boolean,     nullable=False, default=False)
 
 
 class ComplaintCreate(BaseModel):
@@ -85,6 +87,7 @@ class ComplaintOut(BaseModel):
     root_cause:       Optional[str] = None
     severity_factors: Optional[str] = None
     recommended_dept: Optional[str] = None
+    is_anomaly:       bool = False
 
     class Config:
         from_attributes = True
