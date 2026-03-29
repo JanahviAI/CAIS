@@ -58,7 +58,8 @@ def create_complaint(db: Session, payload: ComplaintCreate, user_prn: str = None
 
 
 def get_all(db: Session, user_id: Optional[str] = None, status: Optional[str] = None,
-            priority: Optional[str] = None, emergency_only: bool = False) -> List[ComplaintORM]:
+            priority: Optional[str] = None, emergency_only: bool = False,
+            dept_id: Optional[int] = None) -> List[ComplaintORM]:
     q = db.query(ComplaintORM)
     if user_id:
         q = q.filter(ComplaintORM.user_id == user_id)
@@ -68,6 +69,8 @@ def get_all(db: Session, user_id: Optional[str] = None, status: Optional[str] = 
         q = q.filter(ComplaintORM.priority == priority)
     if emergency_only:
         q = q.filter(ComplaintORM.is_emergency == True, ComplaintORM.demoted_by_admin == False)
+    if dept_id is not None:
+        q = q.filter(ComplaintORM.dept_id == dept_id)
     return q.order_by(ComplaintORM.submitted_at.desc()).all()
 
 
@@ -83,6 +86,12 @@ def update_complaint(db: Session, complaint_id: int, payload: ComplaintUpdate) -
         record.status = payload.status
     if payload.action_taken is not None:
         record.action_taken = payload.action_taken
+    if payload.dept_id is not None:
+        record.dept_id = payload.dept_id
+    if payload.approved_by is not None:
+        record.approved_by = payload.approved_by
+    if payload.approval_notes is not None:
+        record.approval_notes = payload.approval_notes
     record.updated_at = datetime.utcnow()
     db.commit()
     db.refresh(record)

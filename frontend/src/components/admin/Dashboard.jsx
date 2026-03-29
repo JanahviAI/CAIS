@@ -2,13 +2,14 @@ import { useState } from "react";
 import Pill from "../common/Pill";
 import Spinner from "../common/Spinner";
 import ErrorBanner from "../common/ErrorBanner";
-import { COLORS, PRIORITY_COLOR, STATUS_COLOR } from "../../data/constants";
-import { MapPin, ChevronDown, CheckCircle, Clock } from "lucide-react";
+import RCAnalysisPanel from "./RCAnalysisPanel";
+import { COLORS, PRIORITY_COLOR } from "../../data/constants";
+import { MapPin, CheckCircle, Clock } from "lucide-react";
 
 const FILTERS = ["All","Critical","High","Medium","Low","Open","In Progress","Resolved"];
 const PRIORITY_ORDER = { Critical:0, High:1, Medium:2, Low:3 };
 
-export default function Dashboard({ complaints, loading, error, onRetry, onUpdate }) {
+export default function Dashboard({ complaints, loading, error, onRetry, onUpdate, readOnly = false, actorId = null }) {
   const [filter, setFilter]     = useState("All");
   const [selectedId, setSelectedId] = useState(null);
   const [actionText, setActionText] = useState("");
@@ -25,7 +26,7 @@ export default function Dashboard({ complaints, loading, error, onRetry, onUpdat
 
   const handleSave = async (c, status) => {
     setSaving(true);
-    try { await onUpdate(c.id, { status, action_taken: actionText || c.action_taken }); }
+    try { await onUpdate(c.id, { status, action_taken: actionText || c.action_taken }, actorId); }
     finally { setSaving(false); setSelectedId(null); setActionText(""); }
   };
 
@@ -59,11 +60,13 @@ export default function Dashboard({ complaints, loading, error, onRetry, onUpdat
             const borderColor = PRIORITY_COLOR[c.priority] || COLORS.border;
             return (
               <div key={c.id} style={{
-                background: COLORS.bgCard, borderRadius: 12,
+                background: readOnly ? "#f8f9fb" : COLORS.bgCard,
+                borderRadius: 12,
                 padding: "18px 22px",
                 border: `1px solid ${COLORS.border}`,
-                borderLeft: `3px solid ${borderColor}`,
+                borderLeft: `3px solid ${readOnly ? COLORS.border : borderColor}`,
                 boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+                opacity: readOnly ? 0.85 : 1,
               }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 20 }}>
                   <div style={{ flex: 1 }}>
@@ -87,9 +90,11 @@ export default function Dashboard({ complaints, loading, error, onRetry, onUpdat
                         {c.action_taken}
                       </div>
                     )}
+                    {/* RCA Panel */}
+                    <RCAnalysisPanel complaint={c} />
                   </div>
 
-                  {c.status !== "Resolved" && (
+                  {!readOnly && c.status !== "Resolved" && (
                     <div style={{ flexShrink: 0 }}>
                       {selectedId === c.id ? (
                         <div style={{ width: 250 }}>

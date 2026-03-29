@@ -17,7 +17,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from db.database import engine, Base, SessionLocal
 from models.complaint import ComplaintORM          # noqa: F401 — registers ORM model
 from models.user import UserORM                    # noqa: F401 — registers ORM model
+from models.department import DepartmentORM, DepartmentAdminORM  # noqa: F401
+from models.audit_log import AuditLogORM           # noqa: F401
 from routers import complaints, analytics, auth
+from routers import departments, rca, anomaly
 
 # ── Create tables ─────────────────────────────────────────────────────────────
 Base.metadata.create_all(bind=engine)
@@ -37,8 +40,8 @@ _maybe_seed()
 # ── App ────────────────────────────────────────────────────────────────────────
 app = FastAPI(
     title="Complaint Intelligence System API",
-    description="NLP-powered complaint analysis, clustering and prioritisation.",
-    version="1.0.0",
+    description="NLP-powered complaint analysis, clustering, RBAC, RCA and anomaly detection.",
+    version="2.0.0",
 )
 
 # CORS — allow React dev-server (port 3000) and production origin
@@ -54,8 +57,11 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(complaints.router)
 app.include_router(analytics.router)
+app.include_router(departments.router)
+app.include_router(rca.router)
+app.include_router(anomaly.router)
 
 
 @app.get("/")
 def root():
-    return {"message": "Complaint Intelligence System API", "docs": "/docs"}
+    return {"message": "Complaint Intelligence System API v2", "docs": "/docs"}

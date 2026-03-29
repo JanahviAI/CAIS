@@ -2,7 +2,8 @@
 models/complaint.py
 ────────────────────
 ORM table + Pydantic schemas for complaints.
-New columns: is_emergency, demoted_by_admin
+New columns: is_emergency, demoted_by_admin, dept_id, approved_by,
+             approval_notes, root_cause, severity_factors, recommended_dept
 """
 
 from __future__ import annotations
@@ -34,6 +35,14 @@ class ComplaintORM(Base):
     submitted_at     = Column(Date,        nullable=False, default=date.today)
     updated_at       = Column(DateTime,    nullable=False, default=datetime.utcnow,
                               onupdate=datetime.utcnow)
+    # ── Department & approval fields ──────────────────────────────────────────
+    dept_id          = Column(Integer,     nullable=True, index=True)
+    approved_by      = Column(String(64),  nullable=True)
+    approval_notes   = Column(Text,        nullable=True)
+    # ── Root Cause Analysis fields ────────────────────────────────────────────
+    root_cause       = Column(Text,        nullable=True)
+    severity_factors = Column(Text,        nullable=True)
+    recommended_dept = Column(String(128), nullable=True)
 
 
 class ComplaintCreate(BaseModel):
@@ -41,11 +50,15 @@ class ComplaintCreate(BaseModel):
     text:         str  = Field(..., min_length=10, max_length=4000)
     location:     Optional[str] = "Unknown"
     is_emergency: Optional[bool] = False
+    dept_id:      Optional[int] = None
 
 
 class ComplaintUpdate(BaseModel):
-    status:       Optional[str] = None
-    action_taken: Optional[str] = None
+    status:         Optional[str] = None
+    action_taken:   Optional[str] = None
+    dept_id:        Optional[int] = None
+    approved_by:    Optional[str] = None
+    approval_notes: Optional[str] = None
 
 
 class ComplaintOut(BaseModel):
@@ -66,6 +79,12 @@ class ComplaintOut(BaseModel):
     demoted_by_admin: bool
     submitted_at:     date
     updated_at:       datetime
+    dept_id:          Optional[int] = None
+    approved_by:      Optional[str] = None
+    approval_notes:   Optional[str] = None
+    root_cause:       Optional[str] = None
+    severity_factors: Optional[str] = None
+    recommended_dept: Optional[str] = None
 
     class Config:
         from_attributes = True

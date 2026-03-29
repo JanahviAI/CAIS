@@ -65,6 +65,8 @@ class UserORM(Base):
     role           = Column(String(16),  nullable=False, default="user")
     is_active      = Column(Boolean,     nullable=False, default=True)
     created_at     = Column(DateTime,    nullable=False, default=datetime.utcnow)
+    is_super_admin = Column(Boolean,     nullable=False, default=False)
+    dept_id        = Column(Integer,     nullable=True)
 
 
 # ── Pydantic Schemas ──────────────────────────────────────────────────────────
@@ -99,13 +101,16 @@ class LoginRequest(BaseModel):
 
 
 class UserOut(BaseModel):
-    role:      str
-    name:      str
-    user_id:   str
-    email:     str
-    prn:       Optional[str] = None
-    branch:    Optional[str] = None
-    year:      Optional[str] = None
+    role:           str
+    name:           str
+    user_id:        str
+    email:          str
+    prn:            Optional[str] = None
+    branch:         Optional[str] = None
+    year:           Optional[str] = None
+    is_super_admin: bool = False
+    dept_id:        Optional[int] = None
+    dept_name:      Optional[str] = None
 
     class Config:
         from_attributes = True
