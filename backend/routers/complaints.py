@@ -19,6 +19,7 @@ from models.user import UserORM
 from models.audit_log import AuditLogORM
 from services import complaint_service
 from services.rca_service import analyze_complaint
+from services.anomaly_detection import detect_anomaly
 
 router = APIRouter(prefix="/api/complaints", tags=["complaints"])
 
@@ -86,11 +87,17 @@ def submit_complaint(payload: ComplaintCreate, db: Session = Depends(get_db)):
     record.root_cause       = rca["root_cause"]
     record.severity_factors = rca["severity_factors"]
     record.recommended_dept = rca["recommended_dept"]
+
+    # Run Anomaly Detection
+    anomaly_result = detect_anomaly(record, db)
+    record.is_anomaly = anomaly_result['is_anomaly']
+
     db.commit()
     db.refresh(record)
 
     _log_action(db, payload.user_id, "submit_complaint",
-                complaint_id=record.id, dept_id=record.dept_id)
+                complaint_id=record.id, dept_id=record.dept_id,
+                details=f"anomaly={record.is_anomaly}")
     return {**ComplaintOut.from_orm(record).model_dump(), "analysis": analysis}
 
 
