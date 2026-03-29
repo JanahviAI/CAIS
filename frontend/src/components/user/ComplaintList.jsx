@@ -2,7 +2,7 @@ import Pill from "../common/Pill";
 import Spinner from "../common/Spinner";
 import ErrorBanner from "../common/ErrorBanner";
 import { COLORS } from "../../data/constants";
-import { MapPin, Clock, AlertTriangle } from "lucide-react";
+import { MapPin } from "lucide-react";
 
 export default function ComplaintList({ complaints, loading, error, onRetry }) {
   if (loading) return <Spinner message="Loading your complaints..." />;

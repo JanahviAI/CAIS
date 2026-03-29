@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { demoteComplaint, updateComplaint } from "../../services/api";
+import { demoteComplaint } from "../../services/api";
 import Pill from "../common/Pill";
 import Spinner from "../common/Spinner";
 import { COLORS } from "../../data/constants";

@@ -3,6 +3,7 @@ import LoginPage    from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
 import UserDashboard  from "./components/user/UserDashboard";
 import AdminDashboard from "./components/admin/AdminDashboard";
+import DepartmentAdminDashboard from "./components/admin/DepartmentAdminDashboard";
 
 export default function App() {
   const [session, setSession] = useState(null);
@@ -25,6 +26,12 @@ export default function App() {
     );
   }
 
-  if (session.role === "user") return <UserDashboard user={session} onLogout={() => setSession(null)} />;
+  if (session.role === "user") {
+    return <UserDashboard user={session} onLogout={() => setSession(null)} />;
+  }
+  if (session.role === "dept_head") {
+    return <DepartmentAdminDashboard user={session} onLogout={() => setSession(null)} />;
+  }
+  // super_admin or legacy "admin" role
   return <AdminDashboard user={session} onLogout={() => setSession(null)} />;
 }

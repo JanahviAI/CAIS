@@ -9,6 +9,7 @@ Passwords stored as SHA-256 + salt (no external deps).
 from __future__ import annotations
 import uuid, hashlib, secrets
 from datetime import datetime
+from typing import Optional
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
@@ -54,7 +55,7 @@ def register_user(db: Session, payload: RegisterRequest) -> UserOut:
     db.commit()
     db.refresh(user)
 
-    return _to_out(user)
+    return _to_out(user, dept_name=None)
 
 
 def login_user(db: Session, payload: LoginRequest) -> UserOut:
@@ -67,16 +68,28 @@ def login_user(db: Session, payload: LoginRequest) -> UserOut:
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Account is deactivated.")
 
-    return _to_out(user)
+    dept_name = None
+    if user.dept_id is not None:
+        try:
+            from models.department import DepartmentORM
+            dept = db.query(DepartmentORM).filter(DepartmentORM.id == user.dept_id).first()
+            dept_name = dept.name if dept else None
+        except Exception:
+            pass
+
+    return _to_out(user, dept_name=dept_name)
 
 
-def _to_out(user: UserORM) -> UserOut:
+def _to_out(user: UserORM, dept_name: Optional[str] = None) -> UserOut:
     return UserOut(
-        role    = user.role,
-        name    = user.full_name,
-        user_id = user.user_id,
-        email   = user.email,
-        prn     = user.prn,
-        branch  = user.branch,
-        year    = user.year,
+        role           = user.role,
+        name           = user.full_name,
+        user_id        = user.user_id,
+        email          = user.email,
+        prn            = user.prn,
+        branch         = user.branch,
+        year           = user.year,
+        is_super_admin = user.is_super_admin,
+        dept_id        = user.dept_id,
+        dept_name      = dept_name,
     )

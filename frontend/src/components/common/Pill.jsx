@@ -1,5 +1,3 @@
-import { COLORS } from "../../data/constants";
-
 const VARIANTS = {
   priority: {
     Critical:     { bg: "#fef2f2", text: "#dc2626", border: "#fecaca" },

@@ -1,9 +1,10 @@
 import { useState } from "react";
 import Navbar, { NavTab } from "../common/Navbar";
-import OverviewTab   from "./OverviewTab";
-import Dashboard     from "./Dashboard";
-import EmergencyTab  from "./EmergencyTab";
-import InsightsTab   from "./InsightsTab";
+import OverviewTab    from "./OverviewTab";
+import AnalyticsDashboard from "./AnalyticsDashboard";
+import Dashboard      from "./Dashboard";
+import EmergencyTab   from "./EmergencyTab";
+import InsightsTab    from "./InsightsTab";
 import { useComplaints } from "../../hooks/useComplaints";
 import { COLORS } from "../../data/constants";
 
@@ -22,7 +23,7 @@ export default function AdminDashboard({ user, onLogout }) {
       <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 
       <Navbar isAdmin user={user} onLogout={onLogout}>
-        {["overview","complaints","emergency","insights"].map(v => (
+        {["overview","analytics","complaints","emergency","insights"].map(v => (
           <NavTab key={v} active={view === v} onClick={() => setView(v)}>
             {v === "emergency"
               ? <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -38,10 +39,11 @@ export default function AdminDashboard({ user, onLogout }) {
       </Navbar>
 
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "30px 24px" }}>
-        {view === "overview"   && <OverviewTab />}
-        {view === "complaints" && <Dashboard complaints={complaints} loading={loading} error={error} onRetry={reload} onUpdate={handleUpdate} />}
-        {view === "emergency"  && <EmergencyTab complaints={complaints} loading={loading} onUpdate={handleUpdate} />}
-        {view === "insights"   && <InsightsTab />}
+        {view === "overview"    && <OverviewTab />}
+        {view === "analytics"   && <AnalyticsDashboard user={user} />}
+        {view === "complaints"  && <Dashboard complaints={complaints} loading={loading} error={error} onRetry={reload} onUpdate={handleUpdate} />}
+        {view === "emergency"   && <EmergencyTab complaints={complaints} loading={loading} onUpdate={handleUpdate} />}
+        {view === "insights"    && <InsightsTab />}
       </div>
     </div>
   );
