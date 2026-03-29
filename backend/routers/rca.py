@@ -64,5 +64,4 @@ def rerun_analysis(complaint_id: int, db: Session = Depends(get_db)):
         "severity_factors":record.severity_factors,
         "recommended_dept":record.recommended_dept,
         "confidence":      rca.get("confidence", "Medium"),
-        "spacy_available": rca.get("spacy_available", False),
     }
