@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.venv/
+env/
+*/caisenv/      # catches it anywhere inside CAIS
+.env
+*.db
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# React Native / Expo
+.expo/
+.expo-shared/
+android/
+ios/
+
+# Build outputs
+build/
+dist/
+
+# Env (frontend + mobile)
+.env.local
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
