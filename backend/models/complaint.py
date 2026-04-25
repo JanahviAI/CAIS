@@ -45,6 +45,10 @@ class ComplaintORM(Base):
     recommended_dept = Column(String(128), nullable=True)
     # ── Anomaly Detection fields ──────────────────────────────────────────────
     is_anomaly       = Column(Boolean,     nullable=False, default=False)
+    # ── Reallocation fields ───────────────────────────────────────────────────
+    reallocation_reason = Column(Text,     nullable=True)
+    reallocated_by   = Column(String(64),  nullable=True)
+    reallocated_at   = Column(DateTime,    nullable=True)
 
 
 class ComplaintCreate(BaseModel):
@@ -61,6 +65,11 @@ class ComplaintUpdate(BaseModel):
     dept_id:        Optional[int] = None
     approved_by:    Optional[str] = None
     approval_notes: Optional[str] = None
+
+
+class ReallocateRequest(BaseModel):
+    new_dept_id: int = Field(..., gt=0, description="Target department ID")
+    reason:      str = Field(..., min_length=5, max_length=500, description="Reason for reallocation")
 
 
 class ComplaintOut(BaseModel):
@@ -88,6 +97,9 @@ class ComplaintOut(BaseModel):
     severity_factors: Optional[str] = None
     recommended_dept: Optional[str] = None
     is_anomaly:       bool = False
+    reallocation_reason: Optional[str] = None
+    reallocated_by:   Optional[str] = None
+    reallocated_at:   Optional[datetime] = None
 
     class Config:
         from_attributes = True
