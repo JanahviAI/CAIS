@@ -2,33 +2,64 @@
 __pycache__/
 *.py[cod]
 *.pyo
+*.egg
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Virtual Environments
 venv/
 .venv/
 env/
-*/caisenv/      # catches it anywhere inside CAIS
+ENV/
+caisenv/
+venv_*/
+
+# Environment variables
 .env
+.env.local
+.env.*.local
+
+# Database
 *.db
+*.sqlite
+*.sqlite3
 
 # Node
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.npm/
 
-# React Native / Expo
-.expo/
-.expo-shared/
-android/
-ios/
-
-# Build outputs
+# React / Next
+.next/
+out/
 build/
-dist/
 
-# Env (frontend + mobile)
-.env.local
-.env.*
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
 
 # OS
 .DS_Store
+.AppleDouble
+.LSOverride
 Thumbs.db
+desktop.ini
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Misc
+*.log
+.cache/
+.pytest_cache/
