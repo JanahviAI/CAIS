@@ -1,7 +1,0 @@
-# Terminal 1
-cd cais/backend && complaintenv\Scripts\activate
-pip install -r requirements.txt
-uvicorn main:app --reload --port 8000
-
-# Terminal 2
-cd cais/frontend && npm start
